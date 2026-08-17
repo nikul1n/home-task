@@ -188,3 +188,4 @@ backlog
 
 Всё перечисленное — это минимальный архитектурный каркас, который почти не заметен в интерфейсе MVP, но избавит вас от бессонных ночей, когда приложение разрастётся до реального использования семьёй. Потратив несколько часов сейчас, вы сэкономите недели переделок в будущем.
 
+uv add "fastapi[standard]" "uvicorn[standard]" "gunicorn" "pydantic-settings" "sqlalchemy[asyncio]" "alembic" "asyncpg" "psycopg2-binary" "redis[hiredis]" "httpx"
