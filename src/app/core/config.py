@@ -1,12 +1,13 @@
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    SECRET_KEY: str = "your-secret-key-change-in-production"
+    # Секретный ключ — в реальном проекте брать из .env!
+    SECRET_KEY: str = "your-super-secret-key-change-this-in-production"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
-    
+
     class Config:
         env_file = ".env"
+        extra="ignore"
 
 settings = Settings()

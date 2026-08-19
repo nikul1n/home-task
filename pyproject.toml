@@ -1,5 +1,5 @@
 [project]
-name = "home-task"
+name = "app"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -9,19 +9,22 @@ authors = [
 requires-python = ">=3.14"
 dependencies = [
     "alembic>=1.19.1",
+    "argon2-cffi>=25.1.0",
     "asyncpg>=0.31.0",
     "fastapi[standard]>=0.141.1",
     "gunicorn>=26.0.0",
     "httpx>=0.28.1",
+    "passlib>=1.7.4",
     "psycopg2-binary>=2.9.12",
     "pydantic-settings>=2.15.0",
+    "python-jose>=3.5.0",
     "redis[hiredis]>=8.1.0",
     "sqlalchemy[asyncio]>=2.0.52",
     "uvicorn[standard]>=0.52.3",
 ]
 
 [project.scripts]
-home-task = "home_task:main"
+app = "app:main"
 
 [build-system]
 requires = ["uv_build>=0.12.5,<0.13.0"]
