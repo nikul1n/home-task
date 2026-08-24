@@ -3,11 +3,11 @@ from app.core.security import verify_password, get_password_hash
 
 # Наша "база данных"
 fake_users_db = {
-    "alex": {
+    "pavel": {
         "id": 1,
-        "username": "alex",
-        "email": "alex@example.com",
-        "hashed_password": get_password_hash("secret123"),
+        "username": "pavel",
+        "email": "nikulin@netkam.ru",
+        "hashed_password": get_password_hash("123123"),
         "is_active": True,
     }
 }
