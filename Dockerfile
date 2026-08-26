@@ -7,9 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Установка uv
-ENV UV_VERSION=0.5.4
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="/root/.cargo/bin:$PATH"
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # Рабочая директория
 WORKDIR /app
@@ -18,12 +16,13 @@ WORKDIR /app
 COPY pyproject.toml uv.lock ./
 
 # Установка зависимостей
-RUN uv sync --frozen --no-cache --no-dev
+RUN uv sync --frozen --no-install-project --no-cache --no-dev
 
 # Копируем исходный код
-COPY app ./app
-COPY alembic ./alembic
-COPY alembic.ini .
+COPY . .
+
+ENV PATH="/app/.venv/bin:$PATH" \
+    PYTOHNPATH="/app/src"
 
 # Открываем порт
 EXPOSE 8000

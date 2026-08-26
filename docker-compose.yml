@@ -23,19 +23,19 @@ services:
     volumes:
       - redis_data:/data
 
-  migrate:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    environment:
-      DATABASE_URL: postgresql+asyncpg://family_user:family_password@db/family_db
-    command: uv run alembic upgrade head
-    depends_on:
-      db:
-        condition: service_healthy
-    volumes:
-      - ./app:/app/app
-      - ./alembic:/app/alembic
+  # migrate:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     DATABASE_URL: postgresql+asyncpg://family_user:family_password@db/family_db
+    
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   volumes:
+  #     - ./app:/app/app
+  #     - ./alembic:/app/alembic
 
   app:
     build:
@@ -46,6 +46,7 @@ services:
       REDIS_URL: redis://redis:6379
       SECRET_KEY: supersecretkey_change_me
       ACCESS_TOKEN_EXPIRE_MINUTES: 1440
+    command: sh -c "uv run alembic upgrade head && uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
     ports:
       - "8000:8000"
     depends_on:
@@ -53,8 +54,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
-      migrate:
-        condition: service_completed_successfully
+      # migrate:
+      #   condition: service_completed_successfully
     volumes:
       - ./app:/app/app   # для hot-reload при разработке (опционально)
       - ./alembic:/app/alembic

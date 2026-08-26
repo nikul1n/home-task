@@ -6,17 +6,18 @@ from logging.config import fileConfig
 from sqlalchemy.ext.asyncio import async_engine_from_config
 from sqlalchemy import pool
 from alembic import context
+from pathlib import Path
+import sys
 
 # from app.db.base import Base
-from app.infrastructure.db import base
-from app.models import *  # импорт всех моделей для autogenerate
+from app.infrastructure.db.models import Base
 from app.core.config import settings
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
-
 
 config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
+
+config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 target_metadata = Base.metadata
 

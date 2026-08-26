@@ -15,17 +15,12 @@ dependencies = [
     "gunicorn>=26.0.0",
     "httpx>=0.28.1",
     "passlib>=1.7.4",
+    "phonenumbers>=9.0.37",
     "psycopg2-binary>=2.9.12",
+    "pydantic-extra-types>=2.11.1",
     "pydantic-settings>=2.15.0",
     "python-jose>=3.5.0",
     "redis[hiredis]>=8.1.0",
     "sqlalchemy[asyncio]>=2.0.52",
     "uvicorn[standard]>=0.52.3",
 ]
-
-[project.scripts]
-app = "app:main"
-
-[build-system]
-requires = ["uv_build>=0.12.5,<0.13.0"]
-build-backend = "uv_build"

@@ -13,7 +13,6 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 class Base(DeclarativeBase):
     pass
 
-
 class User(Base):
     __tablename__ = "users"
 
@@ -21,7 +20,7 @@ class User(Base):
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    login: Mapped[str] = mapped_column(
+    username: Mapped[str] = mapped_column(
         String(255), nullable=False, unique=True)
     email: Mapped[str] = mapped_column(
         String(255), nullable=False, unique=True)

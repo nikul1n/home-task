@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from app.core.security import decode_access_token
-from app.services.user_service import get_user_by_username
+from app.services.user_service import get_user_by_email
 from app.schemas.token import TokenData
 from app.schemas.user import User
 
@@ -31,7 +31,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
         raise credentials_exception
     
     # Проверяем, что пользователь существует
-    user = get_user_by_username(username)
+    user = get_user_by_email(username)
     if user is None:
         raise credentials_exception
     
