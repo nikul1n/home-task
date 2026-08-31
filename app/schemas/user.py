@@ -3,6 +3,7 @@ from pydantic_extra_types.phone_numbers import PhoneNumber
 from datetime import datetime
 from typing import Optional
 
+
 class UserBase(BaseModel):
     name: str
     email: EmailStr
@@ -25,3 +26,4 @@ class UserAuth:
 
 class UserCreate(UserBase):
     password: str
+

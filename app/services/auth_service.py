@@ -1,4 +1,4 @@
-from app.schemas.user import UserInDB, UserCreate
+from app.schemas.user import UserResponse, UserCreate
 from app.infrastructure.db.models import User
 from app.core.security import verify_password, get_password_hash
 
@@ -45,5 +45,4 @@ async def create_user(db: AsyncSession, user: UserCreate) -> User:
     return user
 
 def user_exists(email: str):
-    # TODO: получать из реальной БД
-    return email in fake_users_db
+    return UserResponse(email)

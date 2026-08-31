@@ -1,8 +1,14 @@
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    DATABASE_URL: str = "postgresql+asyncpg://family_user:family_password@localhost/family_db"
-    REDIS_URL: str = "redis://localhost:6379"
+    POSTGRES_SERVER: str = "localhost"
+    POSTGRES_PORT: int =5432
+    POSTGRES_USER: str = "task_user"
+    POSTGRES_PASSWORD: str = "task_secret"
+    POSTGRES_DB: str = "task_db"
+
+    DATABASE_URL: str = "postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@task_db/${POSTGRES_DB}"
+    # REDIS_URL: str = "redis://localhost:6379"
     SECRET_KEY: str = "your-secret-key"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30

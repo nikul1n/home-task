@@ -1,15 +1,15 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from app.core.security import decode_access_token
-from app.services.user_service import get_user_by_email
+from app.services.auth_service import user_exists
 from app.schemas.token import TokenData
-from app.schemas.user import User
+from app.schemas.user import UserResponse
 
 # OAuth2PasswordBearer — встроенная зависимость FastAPI
 # Она извлекает токен из заголовка Authorization: Bearer <token>
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
-async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
+async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserResponse:
     """
     Извлекает текущего пользователя из JWT токена.
     Это сердце нашей авторизации!
