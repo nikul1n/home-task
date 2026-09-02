@@ -1,30 +1,28 @@
+from fastapi import HTTPException, status
+from sqlalchemy import select
 from app.schemas.user import UserResponse, UserCreate
 from app.infrastructure.db.models import User
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.security import verify_password, get_password_hash
 
-# Наша "база данных"
-fake_users_db = {
-    "pavel": {
-        "id": 1,
-        "username": "pavel",
-        "email": "nikulin@netkam.ru",
-        "hashed_password": get_password_hash("123123"),
-        "is_active": True,
-    }
-}
 
-def authenticate_user(email: str, password: str) -> UserInDB | None:
+async def get_user_by_email(db: AsyncSession, email: str):
+    result = await db.execute(select(User).where(User.email == email))
+    return result.scalar_one_or_none()
+
+
+async def authenticate_user(db: AsyncSession, email: str, password: str):
     """Аутентифицирует пользователя: проверяет, что такой есть и пароль верный"""
-    user = get_user_by_email(email)
+    user = await get_user_by_email(db, email)
     if not user:
         return None
-    if not verify_password(password, user.hashed_password):
+    if not verify_password(password, user.password_hash):
         return None
     return user
 
-async def create_user(db: AsyncSession, user: UserCreate) -> User:
-    result = await db.execute(select(User).where(User.email == email))
-    exists = result.scalar_one_or_none()
+
+async def create_user(db: AsyncSession, user_model: UserCreate) -> User:
+    exists = await get_user_by_email(db, user_model.email)
     if exists:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -32,11 +30,11 @@ async def create_user(db: AsyncSession, user: UserCreate) -> User:
         )
 
     user = User(
-        hashed_password=hash_password(user.password),
-        email=email,
-        phone=phone,
-        birthday=birthday,
-        timezone=timezone
+        password_hash=get_password_hash(user_model.password),
+        email=user_model.email,
+        phone=user_model.phone,
+        birthday=user_model.birthday,
+        timezone=user_model.timezone,
     )
 
     db.add(user)

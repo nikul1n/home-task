@@ -9,21 +9,20 @@ class UserBase(BaseModel):
     email: EmailStr
     phone: PhoneNumber
     birthday: Optional[datetime]
-    avatar_url: Optional[str]
     timezone: str
 
 
 class UserResponse(UserBase):
     id: int
     is_active: bool = True
+    avatar_url: Optional[str]
 
     class Config:
         from_attributes = True
 
-class UserAuth:
+class UserAuth(BaseModel):
     email: EmailStr
     password: str
 
 class UserCreate(UserBase):
     password: str
-

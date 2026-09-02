@@ -1,15 +1,16 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from app.core.security import decode_access_token
-from app.services.auth_service import user_exists
-from app.schemas.token import TokenData
+from app.infrastructure.db.models import User
+from app.infrastructure.db.session import get_db
 from app.schemas.user import UserResponse
+from app.services.auth_service import get_user_by_email
 
 # OAuth2PasswordBearer — встроенная зависимость FastAPI
 # Она извлекает токен из заголовка Authorization: Bearer <token>
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
-async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserResponse:
+async def get_current_user(db = Depends(get_db), token: str = Depends(oauth2_scheme)) -> User:
     """
     Извлекает текущего пользователя из JWT токена.
     Это сердце нашей авторизации!
@@ -26,12 +27,12 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserResponse:
         raise credentials_exception
     
     # Извлекаем имя пользователя
-    username: str = payload.get("sub")
-    if username is None:
+    email = payload.get("sub")
+    if email is None:
         raise credentials_exception
     
     # Проверяем, что пользователь существует
-    user = get_user_by_email(username)
+    user = await get_user_by_email(db, email)
     if user is None:
         raise credentials_exception
     

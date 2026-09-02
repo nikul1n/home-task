@@ -1,16 +1,7 @@
+в UserCreate дописать генерировать username на основе email
+передавать is_active в авторизации 
+
 Пример https://github.com/StudentsP312/p312-chat/blob/main/app/main.py
-
-Временный список задач:
-1. выкладываем всё из src. Удаляем src
-2. копируем dockerfile и docker compose
-3. Проверяем что pyproject настроен также
-4. из docker compose удалить все лишние сервисы
-5. Поменять настройки других сервисов, чтобы они больше не ссылались на удалённые сервисы
-6. Настрить файлы .env и .env.example чтобы соответствовать всем environment в docker compose
-7. Проверить что app/core/config.py имеет все нужны переменные из .env
-8. Настроить подключение к БД
-9. 
-
 
 MVP
 users: возможность авторизации пользователя  https://habr.com/ru/articles/1015148/
