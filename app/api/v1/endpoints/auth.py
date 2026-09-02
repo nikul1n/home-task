@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from app.schemas.token import Token
-from app.services.auth_service import authenticate_user, user_exists
+from app.services.auth_service import authenticate_user, create_user
 from app.core.security import create_access_token
 from app.schemas.user import UserCreate, UserAuth
 
@@ -28,9 +28,7 @@ async def login(form_data: UserAuth = Depends()):
     return Token(access_token=access_token, token_type="bearer")
 
 @router.post("/registration")
-async def registration(data: UserCreate):
-    if user_exists(data.email):
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="This email is already in use",
-        )
+async def registration(data: UserCreate, db=Depends(get_db)):
+    create_user(db, UserCreate)
+
+    

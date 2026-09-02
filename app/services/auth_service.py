@@ -43,6 +43,3 @@ async def create_user(db: AsyncSession, user: UserCreate) -> User:
     await db.commit()
     await db.refresh(user)
     return user
-
-def user_exists(email: str):
-    return UserResponse(email)

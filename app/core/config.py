@@ -7,7 +7,9 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str = "task_secret"
     POSTGRES_DB: str = "task_db"
 
-    DATABASE_URL: str = "postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@task_db/${POSTGRES_DB}"
+    @property
+    def DATABASE_URL(self) -> str:
+        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@task_db/{self.POSTGRES_DB}"
     # REDIS_URL: str = "redis://localhost:6379"
     SECRET_KEY: str = "your-secret-key"
     ALGORITHM: str = "HS256"
