@@ -29,6 +29,7 @@ async def login(form_data: UserAuth = Depends()):
 
 @router.post("/registration")
 async def registration(data: UserCreate, db=Depends(get_db)):
-    create_user(db, UserCreate)
+    user = create_user()
+
 
     

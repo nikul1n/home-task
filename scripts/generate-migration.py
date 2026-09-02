@@ -55,4 +55,4 @@ try:
 
 finally:
     print("Cleaning up container...")
-    subprocess.run(["docker", "rm", "-f", "-v" CONTAINER], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.run(["docker", "rm", "-f", "-v", CONTAINER], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
