@@ -33,7 +33,7 @@ try:
         "-e", f"POSTGRES_USER={USER}",
         "-e", f"POSTGRES_PASSWORD={PASSWORD}",
         "-e", f"POSTGRES_DB={DB_NAME}",
-        "--tmpfs /var/lib/postgresql/data",
+        "--tmpfs", "/var/lib/postgresql/data",
         "postgres:16-alpine"
     ], check=True, stdout=subprocess.DEVNULL)
 

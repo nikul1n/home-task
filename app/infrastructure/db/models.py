@@ -3,8 +3,18 @@ from datetime import datetime, date
 from typing import Optional
 
 from sqlalchemy import (
-    Boolean, CheckConstraint, Date, DateTime, ForeignKey, Index,
-    Integer, String, Text, UniqueConstraint, Uuid, text
+    Boolean,
+    CheckConstraint,
+    Date,
+    DateTime,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+    Uuid,
+    text,
 )
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
@@ -13,6 +23,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 class Base(DeclarativeBase):
     pass
 
+
 class User(Base):
     __tablename__ = "users"
 
@@ -20,15 +31,14 @@ class User(Base):
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    username: Mapped[str] = mapped_column(
-        String(255), nullable=False, unique=True)
-    email: Mapped[str] = mapped_column(
-        String(255), nullable=False, unique=True)
+    username: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     phone: Mapped[str] = mapped_column(
-        String(20), 
+        String(20),
         # Проверка: только цифры (если телефон указан)
-        CheckConstraint("phone ~ '^[0-9]+$'", name="ck_users_phone_digits"), 
-        nullable=True)
+        CheckConstraint("phone ~ '^[0-9]+$'", name="ck_users_phone_digits"),
+        nullable=True,
+    )
 
     birthday: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -37,7 +47,8 @@ class User(Base):
         String(50), nullable=False, server_default="Europe/Moscow"
     )
     is_active: Mapped[bool] = mapped_column(
-        Boolean, nullable=False, server_default=text("true"))
+        Boolean, nullable=False, server_default=text("true")
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=text("now()")
     )
@@ -55,10 +66,8 @@ class User(Base):
     tasks_assigned: Mapped[list["Task"]] = relationship(
         back_populates="responsible", foreign_keys="Task.responsible_id"
     )
-    board_memberships: Mapped[list["BoardUser"]
-                              ] = relationship(back_populates="user")
-    notifications: Mapped[list["Notification"]
-                          ] = relationship(back_populates="user")
+    board_memberships: Mapped[list["BoardUser"]] = relationship(back_populates="user")
+    notifications: Mapped[list["Notification"]] = relationship(back_populates="user")
 
 
 class Board(Base):
@@ -81,7 +90,8 @@ class Board(Base):
 
     # Связи
     creator: Mapped["User"] = relationship(
-        back_populates="boards_created", foreign_keys=[creator_id])
+        back_populates="boards_created", foreign_keys=[creator_id]
+    )
     members: Mapped[list["BoardUser"]] = relationship(back_populates="board")
     tasks: Mapped[list["Task"]] = relationship(back_populates="board")
 
@@ -104,15 +114,13 @@ class BoardUser(Base):
             "role IN ('owner', 'admin', 'member', 'viewer')", name="ck_board_users_role"
         ),
         nullable=False,
-        server_default="member"
+        server_default="member",
     )
     joined_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=text("now()")
     )
 
-    __table_args__ = (
-        UniqueConstraint("board_id", "user_id", name="uq_board_user"),
-    )
+    __table_args__ = (UniqueConstraint("board_id", "user_id", name="uq_board_user"),)
 
     # Связи
     board: Mapped["Board"] = relationship(back_populates="members")
@@ -145,16 +153,16 @@ class Task(Base):
             name="ck_tasks_status",
         ),
         nullable=False,
-        server_default="todo"
+        server_default="todo",
     )
     importance: Mapped[str] = mapped_column(
         String(20),
         CheckConstraint(
             "importance IN ('low', 'medium', 'high', 'critical')",
             name="ck_tasks_importance",
-        ),        
+        ),
         nullable=False,
-        server_default="medium"
+        server_default="medium",
     )
 
     deadline: Mapped[Optional[datetime]] = mapped_column(
@@ -191,7 +199,8 @@ class Task(Base):
     # Связи
     board: Mapped["Board"] = relationship(back_populates="tasks")
     creator: Mapped["User"] = relationship(
-        back_populates="tasks_created", foreign_keys=[creator_id])
+        back_populates="tasks_created", foreign_keys=[creator_id]
+    )
     responsible: Mapped[Optional["User"]] = relationship(
         back_populates="tasks_assigned", foreign_keys=[responsible_id]
     )
@@ -243,9 +252,7 @@ class Notification(Base):
         DateTime(timezone=True), nullable=False, server_default=text("now()")
     )
 
-    __table_args__ = (
-        Index("idx_notifications_user_read", "user_id", "is_read"),
-    )
+    __table_args__ = (Index("idx_notifications_user_read", "user_id", "is_read"),)
 
     # Связи
     user: Mapped["User"] = relationship(back_populates="notifications")

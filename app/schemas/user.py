@@ -1,3 +1,4 @@
+import uuid
 from pydantic import BaseModel, EmailStr
 from pydantic_extra_types.phone_numbers import PhoneNumber
 from datetime import datetime
@@ -13,7 +14,7 @@ class UserBase(BaseModel):
 
 
 class UserResponse(UserBase):
-    id: int
+    id: uuid.UUID
     is_active: bool = True
     avatar_url: Optional[str]
 
