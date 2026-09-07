@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordBearer
 from app.core.security import decode_access_token
 from app.infrastructure.db.models import User
 from app.infrastructure.db.session import get_db
-from app.schemas.user import UserResponse
+# from app.schemas.user import UserResponse
 from app.services.auth_service import get_user_by_email
 
 # OAuth2PasswordBearer — встроенная зависимость FastAPI

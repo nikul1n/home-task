@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
+# from fastapi.security import OAuth2PasswordRequestForm
 from app.infrastructure.db.session import get_db
 from app.schemas.token import Token
 from app.services.auth_service import authenticate_user, create_user
