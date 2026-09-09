@@ -8,6 +8,7 @@ from app.schemas.token import TokenData
 from app.core.security import decode_token
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+### TODO: поменять OAuth2 на BearerHTTP
 
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
