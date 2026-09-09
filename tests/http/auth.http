@@ -1,16 +1,5 @@
 @baseUrl = http://localhost:8000
-# @name login
-POST {{baseUrl}}/api/v1/auth/login/
-Content-Type: application/json
-
-# username={{$dotenv TEST_EMAIL}}&password={{$dotenv TEST_PASSWORD}}
-{
-    "email": "{{$dotenv TEST_EMAIL}}",
-    "password": "{{$dotenv TEST_PASSWORD}}"
-}
-
-###
-
+### 0. Регистрация
 # @name register
 POST {{baseUrl}}/api/v1/auth/registration
 Content-Type: application/json
@@ -24,6 +13,66 @@ Content-Type: application/json
     "password": "{{$dotenv TEST_PASSWORD}}"
 }
 
+### 1. Авторизация
+# @name login
+POST {{baseUrl}}/api/v1/auth/login/
+Content-Type: application/json
+
+# username={{$dotenv TEST_EMAIL}}&password={{$dotenv TEST_PASSWORD}}
+{
+    "email": "{{$dotenv TEST_EMAIL}}",
+    "password": "{{$dotenv TEST_PASSWORD}}"
+}
+
+### 2. Создание доски
+# @name create_board
+POST {{baseUrl}}/api/v1/boards/create_board
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.access_token}}
+
+{
+    "title": "Семейные дела1",
+    "description": "Доска для общих задач"
+}
+
+### 3. Получение списка всех досок пользователя
+# @name list_boards
+GET {{baseUrl}}/api/v1/boards/
+Authorization: Bearer {{login.response.body.access_token}}
+
+### 4. Получение конкретной доски по id
+# @name get_board
+GET {{baseUrl}}/api/v1/boards/{{create_board.response.body.id}}
+Authorization: Bearer {{login.response.body.access_token}}
+
+### 5. Обновление доски
+# @name update_board
+PATCH {{baseUrl}}/api/v1/boards/{{create_board.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.access_token}}
+
+{
+    "title": "Новое название доски",
+    "description": "Обновлённое описание"
+}
+
+### 6. Добавление участника
+# Требуется id второго пользователя. Можно получить через регистрацию или использовать существующий.
+# Для простоты используем переменную окружения SECOND_USER_ID (задайте её в .env)
+# @name add_member
+POST {{baseUrl}}/api/v1/boards/{{create_board.response.body.id}}/members
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.access_token}}
+
+{
+    "user_id": "{{$dotenv SECOND_USER_ID}}",
+    "role": "member"
+}
+
+### 7. Удаление доски (мягкое удаление)
+# @name delete_board
+DELETE {{baseUrl}}/api/v1/boards/{{create_board.response.body.id}}
+Authorization: Bearer {{login.response.body.access_token}}
 
 # Header name must be a valid HTTP token 
 # прописать данные которые приходят в usercreate

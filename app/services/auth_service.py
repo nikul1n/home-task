@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from sqlalchemy import select
-from app.schemas.user import UserResponse, UserCreate
+from app.schemas.user import UserCreate
 from app.infrastructure.db.models import User
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.security import verify_password, get_password_hash

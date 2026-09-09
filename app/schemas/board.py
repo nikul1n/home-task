@@ -17,7 +17,7 @@ class BoardUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=1, max_length=255)
     description: Optional[str] = None
 
-class BoardRead(BoardBase):
+class BoardResponse(BoardBase):
     id: UUID
     creator_id: UUID
     created_at: datetime

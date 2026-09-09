@@ -1,3 +1,8 @@
+
+
+
+
+
 в UserCreate дописать генерировать username на основе email
 передавать is_active в авторизации 
 

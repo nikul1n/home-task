@@ -9,11 +9,9 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Index,
-    Integer,
     String,
     Text,
     UniqueConstraint,
-    Uuid,
     text,
 )
 from sqlalchemy.dialects.postgresql import JSONB, UUID
