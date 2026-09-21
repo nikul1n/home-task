@@ -26,12 +26,19 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+        server_default=text("gen_random_uuid()"),
     )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    username: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
-    email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
-    phone: Mapped[str] = mapped_column(
+
+    # ИЗМЕНЕНО: для username и email снят unique=True — уникальность теперь через partial index
+    # (нужно для поддержки soft delete + повторной регистрации на тот же email)
+    username: Mapped[str] = mapped_column(String(255), nullable=False)
+    email: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    phone: Mapped[Optional[str]] = mapped_column(
         String(20),
         # Проверка: только цифры (если телефон указан)
         CheckConstraint("phone ~ '^[0-9]+$'", name="ck_users_phone_digits"),
@@ -52,6 +59,24 @@ class User(Base):
     )
     deleted_at: Mapped[Optional[datetime]] = mapped_column(
         DateTime(timezone=True), nullable=True
+    )
+
+    # ДОБАВЛЕНО: partial unique indexes (Postgres):
+    # уникальность email/username только среди активных (не удалённых) записей.
+    # Позволяет: soft-delete юзера → регистрация нового с тем же email.
+    __table_args__ = (
+        Index(
+            "uq_users_email_active",
+            "email",
+            unique=True,
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
+        Index(
+            "uq_users_username_active",
+            "username",
+            unique=True,
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
     )
 
     # Связи
@@ -77,11 +102,24 @@ class Board(Base):
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     creator_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("users.id"), nullable=False
+        UUID(as_uuid=True),
+        ForeignKey("users.id"),
+        nullable=False,
+        index=True,
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=text("now()")
     )
+
+    # ДОБАВЛЕНО: updated_at, аналогично Task — пригодится для сортировки
+    # "недавно обновлённые доски"
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=text("now()"),
+        onupdate=text("now()"),
+    )
+
     deleted_at: Mapped[Optional[datetime]] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
@@ -107,7 +145,7 @@ class BoardUser(Base):
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     role: Mapped[str] = mapped_column(
-        String(50),
+        String(20),
         CheckConstraint(
             "role IN ('owner', 'admin', 'member', 'viewer')", name="ck_board_users_role"
         ),
@@ -118,7 +156,12 @@ class BoardUser(Base):
         DateTime(timezone=True), nullable=False, server_default=text("now()")
     )
 
-    __table_args__ = (UniqueConstraint("board_id", "user_id", name="uq_board_user"),)
+    __table_args__ = (
+        UniqueConstraint("board_id", "user_id", name="uq_board_user"),
+        # ДОБАВЛЕНО: индекс на user_id (в uq_board_user он второй — для
+        # запроса "все доски юзера" не годится)
+        Index("idx_board_users_user", "user_id"),
+    )
 
     # Связи
     board: Mapped["Board"] = relationship(back_populates="members")
@@ -138,7 +181,10 @@ class Task(Base):
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     creator_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("users.id"), nullable=False
+        UUID(as_uuid=True),
+        ForeignKey("users.id"),
+        nullable=False,  # ДОБАВЛЕНО: индекс на FK
+        index=True,
     )
     responsible_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id"), nullable=True
@@ -173,8 +219,15 @@ class Task(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=text("now()")
     )
+
+    # ИСПРАВЛЕНО: добавлен onupdate=text("now()") — server_default срабатывает
+    # только при INSERT, поэтому без onupdate поле оставалось прежним при UPDATE.
+    # (Альтернатива для bulletproof-варианта — триггер в БД через миграцию.)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, server_default=text("now()")
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=text("now()"),
+        onupdate=text("now()"),  # ORM-уровень
     )
     deleted_at: Mapped[Optional[datetime]] = mapped_column(
         DateTime(timezone=True), nullable=True
@@ -186,7 +239,9 @@ class Task(Base):
         Index("idx_tasks_responsible", "responsible_id"),
         Index("idx_tasks_deadline", "deadline"),
         Index("idx_tasks_created_at", "created_at"),
-        # Индекс для полнотекстового поиска (PostgreSQL)
+        # Индекс для полнотекстового поиска (PostgreSQL).
+        # Для больших таблиц есть смысл перейти на GENERATED COLUMN STORED (PG12+),
+        # сейчас — expression index (пересчитывается на каждый write).
         Index(
             "idx_tasks_search",
             text("to_tsvector('russian', title || ' ' || COALESCE(description, ''))"),
@@ -220,10 +275,20 @@ class ActivityLog(Base):
         UUID(as_uuid=True), ForeignKey("boards.id"), nullable=True
     )
     action: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    # TODO: Предлагается: dict[str, Any] вместо dict — точнее для типизации JSONB
     old_value: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
     new_value: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=text("now()")
+    )
+
+    # ДОБАВЛЕНО: индексы под частые запросы к журналу.
+    # activity_log растёт быстрее всех — индексы нужны до продакшена.
+    __table_args__ = (
+        Index("idx_activity_log_user_created", "user_id", "created_at"),
+        Index("idx_activity_log_task", "task_id"),
+        Index("idx_activity_log_board_created", "board_id", "created_at"),
     )
 
     # Связи (по желанию)

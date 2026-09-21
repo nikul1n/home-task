@@ -1,0 +1,16 @@
+ссылка http://localhost:8000/openapi.json
+Запрос
+npx create-react-router@latest auction-web; `
+cd auction-web; `
+npm install axios @tanstack/react-query zustand react-hook-form @hookform/resolvers zod react-dropzone react-imask sonner date-fns lucide-react clsx tailwind-merge class-variance-authority; `
+npm install -D @tailwindcss/vite @types/node; `
+$pathsConfig = '{' + "`n" + '  "compilerOptions": {' + "`n" + '    "baseUrl": ".",' + "`n" + '    "paths": {' + "`n" + '      "@/*": ["./app/*"]' + "`n" + '    }' + "`n" + '  }' + "`n" + '}'; `
+Set-Content tsconfig.paths.json $pathsConfig; `
+$dirs = @("app/providers", "app/styles", "app/pages/auth", "app/pages/catalog", "app/pages/lot-detail", "app/pages/lot-create", "app/pages/profile", "app/pages/admin", "app/widgets/header", "app/widgets/lot-grid", "app/widgets/winner-modal", "app/features/auth-by-credentials", "app/features/register-user", "app/features/toggle-lot-like", "app/features/choose-winner", "app/entities/user/api", "app/entities/user/model", "app/entities/user/ui", "app/entities/lot/api", "app/entities/lot/model", "app/entities/lot/ui", "app/shared/api", "app/shared/ui", "app/shared/lib", "app/shared/hooks"); `
+foreach ($d in $dirs) { New-Item -ItemType Directory -Force -Path $d | Out-Null }; `
+New-Item -ItemType File -Force -Path "app/shared/lib/utils.ts" | Out-Null; `
+$utilsContent = "import { clsx, type ClassValue } from 'clsx';`nimport { twMerge } from 'tailwind-merge';`n`nexport function cn(...inputs: ClassValue[]) {`n  return twMerge(clsx(inputs));`n}"; `
+Set-Content -Path "app/shared/lib/utils.ts" -Value $utilsContent; `
+Write-Host "Проект успешно инициализирован на React Router v8 Framework и структура FSD создана!" -ForegroundColor Green
+
+Это запрос другого человека на создание архитектуры фронтэнда, мне нужно то же самое, но под мои задачи, мой апи

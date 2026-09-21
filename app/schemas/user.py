@@ -1,8 +1,8 @@
+from typing import Optional
 import uuid
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 from pydantic_extra_types.phone_numbers import PhoneNumber
 from datetime import datetime
-from typing import Optional
 
 
 class UserBase(BaseModel):
@@ -27,3 +27,10 @@ class UserAuth(BaseModel):
 
 class UserCreate(UserBase):
     password: str
+
+class UserShort(BaseModel):
+    id: uuid.UUID
+    username: str
+    name: str
+    avatar_url: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True)

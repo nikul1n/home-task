@@ -5,25 +5,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.infrastructure.db.models import Board, BoardUser
 from app.schemas.board import BoardCreate, BoardUpdate
 
+
 class BoardRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
     async def create(self, data: BoardCreate, creator_id: UUID) -> Board:
         board = Board(
-            title=data.title,
-            description=data.description,
-            creator_id=creator_id
+            title=data.title, description=data.description, creator_id=creator_id
         )
         self.db.add(board)
         await self.db.flush()  # получаем board.id
 
         # Добавляем создателя как владельца
-        member = BoardUser(
-            board_id=board.id,
-            user_id=creator_id,
-            role="owner"
-        )
+        member = BoardUser(board_id=board.id, user_id=creator_id, role="owner")
         self.db.add(member)
         await self.db.commit()
         await self.db.refresh(board)
@@ -34,7 +29,11 @@ class BoardRepository:
         stmt = (
             select(Board)
             .join(BoardUser, BoardUser.board_id == Board.id)
-            .where(Board.id == board_id, BoardUser.user_id == user_id, Board.deleted_at.is_(None))
+            .where(
+                Board.id == board_id,
+                BoardUser.user_id == user_id,
+                Board.deleted_at.is_(None),
+            )
         )
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
@@ -70,13 +69,14 @@ class BoardRepository:
 
     async def check_user_role(self, board_id: UUID, user_id: UUID) -> str | None:
         stmt = select(BoardUser.role).where(
-            BoardUser.board_id == board_id,
-            BoardUser.user_id == user_id
+            BoardUser.board_id == board_id, BoardUser.user_id == user_id
         )
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def add_member(self, board_id: UUID, user_id: UUID, role: str = "member") -> BoardUser:
+    async def add_member(
+        self, board_id: UUID, user_id: UUID, role: str = "member"
+    ) -> BoardUser:
         member = BoardUser(board_id=board_id, user_id=user_id, role=role)
         self.db.add(member)
         await self.db.commit()

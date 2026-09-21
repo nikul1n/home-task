@@ -4,30 +4,6 @@
 # # update put
 # # delite delite
 
-# from app.schemas.board import BoardResponse, BoardCreate, BoardUpdate
-# from fastapi import APIRouter, Depends, HTTPException, status
-# from app.infrastructure.db.session import get_db
-
-# router = APIRouter(prefix="/boards", tags=["boards"])
-
-# @router.post("/create_board", response_model=BoardResponse)
-# async def create_board(form_data: BoardCreate, db=Depends(get_db)):
-#     board = await 
-
-
-
-# user = await authenticate_user(db, form_data.email, form_data.password)
-#     if not user:
-#         raise HTTPException(
-#             status_code=status.HTTP_401_UNAUTHORIZED,
-#             detail="Incorrect username or password",
-#             headers={"WWW-Authenticate": "Bearer"},
-#         )
-
-#     # Создаём токен
-#     access_token = create_access_token(data={"sub": user.email})
-
-#     return Token(access_token=access_token, token_type="bearer")
 
 from uuid import UUID
 from fastapi import APIRouter, Depends, status

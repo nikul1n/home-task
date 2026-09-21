@@ -5,7 +5,7 @@ POST {{baseUrl}}/api/v1/auth/registration
 Content-Type: application/json
 
 {
-    "name": "Vasya",
+    "name": "Vasya1",
     "email": "{{$dotenv TEST_EMAIL}}",
     "phone": "+79999999999",
     "birthday": "2000-12-22",
@@ -31,8 +31,8 @@ Content-Type: application/json
 Authorization: Bearer {{login.response.body.access_token}}
 
 {
-    "title": "Семейные дела1",
-    "description": "Доска для общих задач"
+    "title": "Семейные дела13",
+    "description": "Доска для общих задач new"
 }
 
 ### 3. Получение списка всех досок пользователя
