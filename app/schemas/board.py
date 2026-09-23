@@ -43,11 +43,12 @@ class BoardResponse(BoardBase):
 
 # ---------- Board member schemas ----------
 
-BoardUserRole = Literal["owner", "admin", "member", "viewer"]
+# BoardUserRole = Literal["owner", "admin", "member", "viewer"]
 
 
 class BoardUserBase(BaseModel):
-    role: BoardUserRole = "member"
+    pass
+    # role: BoardUserRole = "member"
 
 
 class BoardUserCreate(BoardUserBase):
@@ -59,6 +60,7 @@ class BoardUserCreate(BoardUserBase):
 
 
 class BoardUserRead(BoardUserBase):
+    role: BoardUserRole
     id: UUID
     board_id: UUID
     user_id: UUID
@@ -67,8 +69,11 @@ class BoardUserRead(BoardUserBase):
     model_config = ConfigDict(from_attributes=True)
 
     # TODO: Плюс эндпоинт PATCH /boards/{id}/members/{user_id}.
+
+
 class BoardUserUpdate(BaseModel):
     """ДОБАВЛЕНО: схема для смены роли участника (PATCH .../members/{user_id})."""
+
     role: BoardUserMutableRole
 
 
@@ -78,6 +83,7 @@ class BoardMemberRead(BoardUserRead):
     Нужно, чтобы фронт не делал N+1 запросов за username/avatar_url.
     Требует join или selectinload в репозитории.
     """
+
     # user подгружается через .user relationship в модели BoardUser.
     # Схема UserShort должна быть определена в schemas/user.py:
     #   class UserShort(BaseModel):
@@ -88,6 +94,7 @@ class BoardMemberRead(BoardUserRead):
     #       model_config = ConfigDict(from_attributes=True)
     user: "UserShort"
 
+
 class BoardDetailResponse(BoardResponse):
     """
     ДОБАВЛЕНО: детальное представление доски для GET /boards/{id}.
@@ -95,9 +102,12 @@ class BoardDetailResponse(BoardResponse):
     Для списка досок (GET /boards) используем обычный BoardResponse
     без участников — иначе разрастётся payload.
     """
+
     members: list[BoardMemberRead] = []
 
     # ---- Forward-refs ----
+
+
 # ИСПРАВЛЕНО: ниже — резолв forward reference 'UserShort' из schemas/user.py.
 # ВАЖНО: импорт в конце файла, чтобы не получить цикл (user.py может
 # импортировать board.py).
