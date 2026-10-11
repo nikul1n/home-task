@@ -1,6 +1,6 @@
 from fastapi import FastAPI   # , APIRouter, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1.endpoints import auth, users
+from app.api.v1.endpoints import auth, tasks, users
 from app.api.v1.endpoints import boards
 
 app = FastAPI(
@@ -21,7 +21,10 @@ app.add_middleware(
 # Регистрируем роутеры
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(users.router, prefix="/api/v1")
-app.include_router(boards.router, prefix="/api/v1/boards", tags=["boards"]) #f"{settings.API_V1_STR}/boards", tags=["boards"])
+app.include_router(boards.router, prefix="/api/v1") 
+app.include_router(tasks.router, prefix="/api/v1") 
+
+
 
 @app.get("/")
 async def root():

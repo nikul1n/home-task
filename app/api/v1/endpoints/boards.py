@@ -14,7 +14,8 @@ from app.schemas.board import BoardCreate, BoardUpdate, BoardResponse, BoardUser
 from app.services.board_service import BoardService
 from app.infrastructure.db.models import User
 
-router = APIRouter()
+router = APIRouter(prefix="/boards", tags=["boards"])
+
 
 @router.post("/create_board", response_model=BoardResponse, status_code=status.HTTP_201_CREATED)
 async def create_board(

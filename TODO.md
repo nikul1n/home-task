@@ -207,3 +207,6 @@ uv add "fastapi[standard]" "uvicorn[standard]" "gunicorn" "pydantic-settings" "s
 2. Микросервисы должны решать какую-то задачу
 3. Какие-то задачи могут быть излишними
 4. Если что-то хотите сделать разберите все возможные решения
+
+
+docker-compose up --build -d
