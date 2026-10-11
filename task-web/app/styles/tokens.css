@@ -1,0 +1,19 @@
+:root {
+  --family-background: #f8f7f2;
+  --family-surface: #ffffff;
+  --family-ink: #293c31;
+  --family-muted: #6e7b71;
+  --family-line: #e4e8df;
+  --family-accent: #edf3e8;
+  --family-warm: #fbefd9;
+  --family-width: 1180px;
+}
+[data-mantine-color-scheme="dark"] {
+  --family-background: #191f1b;
+  --family-surface: #222b25;
+  --family-ink: #e5ede6;
+  --family-muted: #a9b5ab;
+  --family-line: #36433a;
+  --family-accent: #2d3d30;
+  --family-warm: #3c3526;
+}

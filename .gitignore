@@ -209,6 +209,10 @@ tempCodeRunnerFile.py
 # PyPI configuration file
 .pypirc
 
+# Frontend generated files
+node_modules/
+.react-router/
+
 # Marimo
 marimo/_static/
 marimo/_lsp/

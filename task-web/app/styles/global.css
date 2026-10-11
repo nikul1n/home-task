@@ -1,0 +1,50 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--family-background);
+  color: var(--family-ink);
+  line-height: 1.6;
+}
+a {
+  color: inherit;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+:focus-visible {
+  outline: 3px solid var(--mantine-color-sage-5);
+  outline-offset: 3px;
+}
+::selection {
+  background: var(--mantine-color-sage-2);
+  color: #293c31;
+}
+.mantine-Card-root {
+  background: var(--family-surface);
+  border-color: var(--family-line);
+}
+.boot-screen {
+  min-height: 100dvh;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  padding: 24px;
+  text-align: center;
+}
+.muted {
+  color: var(--family-muted);
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

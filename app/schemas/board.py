@@ -34,8 +34,8 @@ class BoardUpdate(BaseModel):
 class BoardResponse(BoardBase):
     id: UUID
     creator_id: UUID
-    created_at: datetime
-    updated_at: datetime
+    # created_at: datetime
+    # updated_at: datetime
     # deleted_at: Optional[datetime] = None  # можно не включать, если не нужно
 
     model_config = ConfigDict(from_attributes=True)

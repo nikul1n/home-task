@@ -1,0 +1,10 @@
+# Apply after docker-compose.yml to serve the static SPA through nginx.
+services:
+  web:
+    build:
+      target: production
+    command: !reset null
+    environment: !reset {}
+    volumes: !reset []
+    ports: !override
+      - "8080:80"
